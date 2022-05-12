@@ -6,6 +6,7 @@ on:
 
 env:
   LINUX_VERSION: 5.14.0-1036-oem
+  PROCESSES: 4
 
 jobs:
   lint:
@@ -16,12 +17,12 @@ jobs:
             fetch-depth: 1
         - name: setup toolchain
           run: |
-            apt update > /dev/null
-            apt install gcc make bear cppcheck -y
+            sudo apt-get update > /dev/null
+            sudo apt-get install gcc make bear cppcheck -y
         
         # install linux-headers
         - name: install linux-headers
-          run: apt install -y linux-headers-${{env.LINUX_VERSION}}
+          run: sudo apt-get install -y linux-headers-${{env.LINUX_VERSION}}
 
         #set SYSSRC due to kernel-open/Makefile line 31 would possibly not find headers to compile against
         - name: build compile database with (bear aka build ear)
