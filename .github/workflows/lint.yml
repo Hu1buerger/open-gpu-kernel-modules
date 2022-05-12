@@ -29,4 +29,16 @@ jobs:
           run: bear make modules SYSSRC=/lib/modules/${{env.LINUX_VERSION}}/build -j${{env.PROCESSES}}
 
         - name: cppcheck
-          run: cppcheck --project=compile_commands.json
+          run: cppcheck \
+            --project=compile_commands.json \
+            --max-ctu-depth=10 \
+            --enable=all \
+            --xml \
+            2>report.xml
+
+        - name: convert cppcheck xml to html
+          run: |
+            sudo apt-get install -y python-pygments
+            curl -O https://raw.githubusercontent.com/danmar/cppcheck/main/htmlreport/cppcheck-htmlreport
+            python ./cppcheck-htmlreport report.xml
+            
