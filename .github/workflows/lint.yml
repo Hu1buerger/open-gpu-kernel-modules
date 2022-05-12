@@ -6,7 +6,7 @@ on:
 
 env:
   LINUX_VERSION: 5.14.0-1036-oem
-  PROCESSES: 16
+  PROCESSES: 32
 
 jobs:
   lint:
@@ -29,12 +29,7 @@ jobs:
           run: bear make modules SYSSRC=/lib/modules/${{env.LINUX_VERSION}}/build -j${{env.PROCESSES}}
 
         - name: cppcheck
-          run: cppcheck \
-            --project=compile_commands.json \
-            --max-ctu-depth=10 \
-            --enable=all \
-            --xml \
-            2>report.xml
+          run: cppcheck --project=compile_commands.json --max-ctu-depth=10 --enable=all --xml 2>report.xml
 
         - name: convert cppcheck xml to html
           run: |
