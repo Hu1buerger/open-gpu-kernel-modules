@@ -6,7 +6,7 @@ on:
 
 env:
   LINUX_VERSION: 5.14.0-1036-oem
-  PROCESSES: 4
+  PROCESSES: 16
 
 jobs:
   lint:
@@ -26,14 +26,7 @@ jobs:
 
         #set SYSSRC due to kernel-open/Makefile line 31 would possibly not find headers to compile against
         - name: build compile database with (bear aka build ear)
-          run: bear make modules SYSSRC=/lib/modules/${{env.LINUX_VERSION}}/build -j4
+          run: bear make modules SYSSRC=/lib/modules/${{env.LINUX_VERSION}}/build -j${{env.PROCESSES}}
 
         - name: cppcheck
-          uses: mikeal/publish-to-github-action@master
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            enable: all
-            inconclusive: enable
-            max_ctu_depth: 8
-            std: c11
-            other_options:  --project=compile_commands.json
+          run: cppcheck --project=compile_commands.json
