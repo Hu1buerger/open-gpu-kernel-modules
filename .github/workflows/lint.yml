@@ -1,0 +1,31 @@
+name: CI-lint
+
+on: 
+  push: 
+  workflow_dispatch:
+
+env:
+  LINUX_VERSION: 5.14.0-1036-oem
+
+jobs:
+  lint:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+          with:
+            fetch-depth: 1
+        - name: setup toolchain
+          run: |
+            apt update
+            apt install gcc make bear cppcheck -y
+        
+        # install linux-headers
+        - name: install linux-headers
+          run: apt install -y linux-headers-${{env.LINUX_VERSION}}
+
+        #set SYSSRC due to kernel-open/Makefile line 31 would possibly not find headers to compile against
+        - name: build compile database with (bear aka build ear)
+          run: bear make modules SYSSRC=/lib/modules/${{env.LINUX_VERSION}}/build -j4
+
+        - name: cppcheck
+          run: cppcheck --project=compile_commands.json
