@@ -16,7 +16,7 @@ jobs:
             fetch-depth: 1
         - name: setup toolchain
           run: |
-            apt update
+            apt update > /dev/null
             apt install gcc make bear cppcheck -y
         
         # install linux-headers
@@ -28,4 +28,11 @@ jobs:
           run: bear make modules SYSSRC=/lib/modules/${{env.LINUX_VERSION}}/build -j4
 
         - name: cppcheck
-          run: cppcheck --project=compile_commands.json
+          uses: mikeal/publish-to-github-action@master
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            enable: all
+            inconclusive: enable
+            max_ctu_depth: 8
+            std: c11
+            other_options:  --project=compile_commands.json
